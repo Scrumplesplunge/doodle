@@ -144,13 +144,16 @@ async function deliverEdits() {
     await delay(nextStart - Date.now());
     nextStart = Date.now() + sendInterval;
     if (newEdits.length == 0) continue;
+    const toSend = newEdits;
+    newEdits = [];
+    const entry = {logicalTime: Infinity, edits: toSend};
+    pendingEdits.push(entry);
     try {
-      const toSend = newEdits;
-      newEdits = [];
       const {logicalTime} = await sendEdits(toSend);
-      pendingEdits.push({logicalTime, edits: toSend});
+      entry.logicalTime = logicalTime;
       sendInterval = defaultSendInterval;
     } catch (error) {
+      newEdits = [...pendingEdits.pop(), ...newEdits];
       console.log("Delivery failed. Backing off.");
       sendInterval *= 2;
     }
