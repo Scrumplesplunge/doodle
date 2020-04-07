@@ -213,6 +213,9 @@ async function main() {
     const pathParts = path.split('/');  // '/a/b' -> ['', 'a', 'b']
     pathParts.splice(0, 1);  // Remove the empty string.
     const id = pathParts[0];
+    if (!id.match(/^[A-Za-z0-9]+$/)) {
+      return error(response, 'Invalid drawing id.');
+    }
     if (pathParts.length == 1) {
       return serve(response, 'text/html', drawPage);
     } else if (pathParts.length == 2) {
