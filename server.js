@@ -149,6 +149,7 @@ async function get(id) { return await Drawing.load(id); }
 
 async function commit(id, data, response) {
   const {logicalTime, imageData} = JSON.parse(data);
+  console.log("Committing %d byte snapshot.", imageData.length);
   const drawing = await get(id);
   await drawing.snapshot(logicalTime, imageData);
   serve(response, 'text/plain', 'You betcha buddy.');
